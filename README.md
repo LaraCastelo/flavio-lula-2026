@@ -16,7 +16,6 @@ The analysis aims to answer the following questions:
 ## Key Findings
 
 - Flávio Bolsonaro's most common topic is **Lula, the Workers' Party (PT), or their supporters**.
-- His second most frequent topic is the **Bolsonaro family**, especially references to his father.
 - In contrast, Lula rarely mentions Flávio Bolsonaro. His posts focus mainly on **social policies**, including programs such as **Prouni**, **SUS**, and **Desenrola**.
 - Flávio Bolsonaro posts more frequently than Lula and also receives more average likes and comments on Instagram feed posts during the period analyzed.
 
