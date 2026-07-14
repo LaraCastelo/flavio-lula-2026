@@ -174,12 +174,12 @@
 
       /* ===== ADAPTADO: zoomBox agora é o "palco" onde os gráficos ficam empilhados ===== */
       #zoomBox {
-        overflow: visible;
-        margin-left: 44vw !important;
-        max-width: 50vw !important;
-        max-height: none !important;
-        position: relative; /* necessário para empilhar os iframes */
-        min-height: 500px; /* ajuste conforme a altura dos seus gráficos */
+  overflow: visible;
+  width: 100%;
+  max-width: none;
+  max-height: none !important;
+  position: relative;
+  min-height: 500px;
       }
 
       /* espaço reservado para o embed do Instagram, abaixo do gráfico */
@@ -264,16 +264,16 @@
         }
 
         #scrolly.side-by-side .scrolly-overlay {
-          margin-top: 70vh;
-          order: 0;
-          min-width: 15rem;
-          max-width: 20rem;
-        }
+  margin-top: 70vh;
+  order: 0;
+  flex:  0 1 42%;
+  max-width: none;
+}
 
-        #scrolly.side-by-side .sticky-thing {
-          order: 1;
-          flex-grow: 2;
-        }
+#scrolly.side-by-side .sticky-thing {
+  order: 1;
+  flex: 0 1 58%;
+}
       }
     </style>
     <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
@@ -307,7 +307,7 @@
 </p>
  <p>The data suggest that Flávio is leaning on the same strategy that helped propel his father's rise: taking aim at the Workers' Party (P.T.) and its leading figure, President Luiz Inácio Lula da Silva (Lula).</p>
   <p>The senator and the incumbent president of Brazil lead polls simulating the October election.</p>
-    <section id="scrolly">
+    <section id="scrolly" class="side-by-side">
 
       <div class="sticky-thing">
         <div id="zoomBox">
@@ -420,7 +420,7 @@
 <p>The data was collected using Apify and classified into topics — such as Lula & the Left, Bolsonaro Family and Campaign & Policy — using an AI-based classification model built in Python that was validated against a human-coded sample. The accuracy level for both candidates was higher than 70%.
 </p>
       <p> Engagement figures reflect the average number of likes and comments per post over the same period. 
-        For a full breakdown of the classification criteria and data sources, see the complete methodology on <a href="https://github.com/LaraCastelo">GitHub</a>.</p>
+        For a full breakdown of the classification criteria and data sources, see the complete methodology on <a href="https://github.com/LaraCastelo/flavio-lula-2026">GitHub</a>.</p>
     </footer>
 
     <!-- Mobile Warning Modal -->
