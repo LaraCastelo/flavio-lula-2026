@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        background-color: #fafaf7;
+        margin: 0;
+        padding: 0;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgb(82, 67, 71);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .modal-content {
+        background: rgb(63, 49, 47);
+        padding: 2rem;
+        max-width: 400px;
+        border-radius: 8px;
+        text-align: center;
+        font-family: sans-serif;
+        font-size: 14px;
+      }
+
+      .modal button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+      }
+
+      h1 {
+        max-width: 50%;
+        margin: 4rem auto 2rem auto;
+      }
+
+      /* ===== HEADER COM IMAGEM ===== */
+      .header-image {
+        position: relative;
+        width: 100%;
+        min-height: 85vh;
+        background-image: url("imagens/FotoJet (7).jpg"); /* troque pelo caminho da sua imagem */
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* escurece a imagem um pouco para o texto branco ficar legível */
+      .header-image:{
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.35));
+      }
+
+      .header-image .content {
+        position: relative;
+        z-index: 1;
+        max-width: 45rem;
+        padding: 0 2rem 4rem 2rem;
+        color: white;
+      }
+
+      .header-image .content h1  {
+        max-width: 100%;
+        margin: 0 0 1.5rem 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: bold;
+        font-size: 3.5rem;
+        line-height: 1.15;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .header-image .content .subhead {
+        max-width: 100%;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.4rem;
+        line-height: 1.5;
+        color: white;
+        margin: 0;
+      }
+
+      .byline {
+        max-width: 50%;
+        margin: 2rem auto;
+        font-family: sans-serif;
+        font-size: 16px;
+      }
+
+      .byline a {
+        color: #845a59;
+        text-decoration: underline;
+      }
+
+      iframe,
+      img,
+      video {
+        margin-inline: auto;
+      }
+
+      figure {
+        max-width: 50%;
+        margin: 0 auto 2rem auto;
+        width: 100%;
+      }
+
+      figure img {
+        width: 100%;
+        display: block;
+      }
+
+      figure figcaption {
+        font-size: 14px;
+        color: #6e5a5a;
+        margin-top: 0.5rem;
+      }
+
+      p {
+        max-width: 50%;
+        font-family: sans-serif;
+        margin: 0 auto 2rem auto;
+        font-size: 19px;
+      }
+
+      #scrolly {
+        position: relative;
+        padding: 1rem;
+      }
+
+      .scrolly-overlay {
+        position: relative;
+        padding: 0;
+        max-width: 35rem;
+        margin-left: 3rem;
+        margin-right: 3rem;
+      }
+
+      .sticky-thing {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        width: 100%;
+        margin: 0;
+        z-index: 0;
+        top: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .step {
+        margin: 0 auto 2rem auto;
+        margin-bottom: 25rem;
+        background-color: #fafaf7;
+        color: black;
+        text-align: center;
+        border: 3px solid rgb(142, 80, 80);
+      }
+
+      .step p {
+        padding: 1rem;
+        font-size: 1.25rem;
+        max-width: 90%; /* sobrescreve o max-width: 50% do p genérico */
+        margin: 0;
+      }
+
+      /* ===== ADAPTADO: zoomBox agora é o "palco" onde os gráficos ficam empilhados ===== */
+      #zoomBox {
+        overflow: visible;
+        margin-left: 44vw !important;
+        max-width: 50vw !important;
+        max-height: none !important;
+        position: relative; /* necessário para empilhar os iframes */
+        min-height: 500px; /* ajuste conforme a altura dos seus gráficos */
+      }
+
+      /* espaço reservado para o embed do Instagram, abaixo do gráfico */
+      .instagram-embed-wrapper {
+        width: 100%;
+        margin-top: 1.5rem;
+      }
+
+      .instagram-embed-wrapper iframe {
+        margin: 0 auto !important;
+      }
+
+      /* ===== ADAPTADO: cada "chartDiv" ocupa o mesmo espaço, empilhado ===== */
+      .chartDiv {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.6s ease;
+        pointer-events: none;
+      }
+
+      .chartDiv.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        position: relative; /* o ativo define a altura real do #zoomBox */
+      }
+
+      .chartDiv iframe {
+        width: 100%;
+        border: none;
+      }
+
+      /* container para gráficos fora do scroll, em formato tradicional */
+      .chart-embed {
+        max-width: 50%;
+        margin: 0 auto 3rem auto;
+        width: 100%;
+      }
+
+      .chart-embed iframe {
+        width: 50%;
+        border: none;
+      }
+
+      footer.methodology {
+        max-width: 50%;
+        margin: 5rem auto 3rem auto;
+        padding-top: 2rem;
+        border-top: 1px solid #ccc;
+        font-family: sans-serif;
+        color: #444;
+      }
+
+      footer.methodology h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      footer.methodology p {
+        max-width: 100%;
+        margin: 0 0 1rem 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: #444;
+        text-align: left;
+      }
+
+      @media only screen and (min-width: 700px) {
+        #scrolly.side-by-side {
+          display: flex;
+        }
+
+        #scrolly.side-by-side > div {
+          flex-basis: 0;
+          flex-grow: 1;
+          flex-shrink: 1;
+          padding: 0.75em;
+        }
+
+        #scrolly.side-by-side .scrolly-overlay {
+          margin-top: 70vh;
+          order: 0;
+          min-width: 15rem;
+          max-width: 20rem;
+        }
+
+        #scrolly.side-by-side .sticky-thing {
+          order: 1;
+          flex-grow: 2;
+        }
+      }
+    </style>
+    <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.0.4/scrollama.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.3.0/d3.min.js"></script>
+
+    <!-- ===== ADAPTADO: scripts de responsividade dos embeds ===== -->
+    <!-- Flourish: um script serve para todos os embeds Flourish da página -->
+    <script src="https://public.flourish.studio/resources/embed.js"></script>
+
+    <!-- Instagram: script de embed de posts -->
+    <script async src="//www.instagram.com/embed.js"></script>
+  </head>
+
+  <body>
+    <h1>Flávio Bolsonaro Talks More About Lula and the Workers' Party on Instagram Than About Jair
+</h1>
+    <p class="subhead">An analysis of Instagram captions from Brazil's two leading presidential contenders shows what each candidate talks about most — and who gets more engagement.
+
+</p>
+    <p>By <a href="https://github.com/LaraCastelo">Lara Castelo</a> | July 12, 2026</p>
+
+    <figure>
+      <img src="imagens/FotoJet (7).jpg" />
+      <figcaption>Flávio Bolsonaro's Instagram profile picture shows him with his father, Jair Bolsonaro (left). Lula's Instagram profile picture is on the right.
+
+</figcaption>
+    </figure>
+
+    <p>Brazil's presidential race is also being fought on Instagram, particularly on the account of Senator Flávio Bolsonaro, the leading right-wing candidate and son of former President Jair Bolsonaro.
+</p>
+ <p>The data suggest that Flávio is leaning on the same strategy that helped propel his father's rise: taking aim at the Workers' Party (P.T.) and its leading figure, President Luiz Inácio Lula da Silva (Lula).</p>
+  <p>The senator and the incumbent president of Brazil lead polls simulating the October election.</p>
+    <section id="scrolly">
+
+      <div class="sticky-thing">
+        <div id="zoomBox">
+          <!-- CHART 0: Flourish hierarchy + Datawrapper -->
+          <div id="chart0" class="chartDiv active">
+            <div class="flourish-embed flourish-hierarchy" data-src="visualisation/29660679"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/29660679/thumbnail" width="100%" alt="hierarchy visualization" /></noscript></div>
+            <div class="flourish-embed flourish-hierarchy" data-src="visualisation/29655777"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/29655777/thumbnail" width="100%" alt="hierarchy visualization" /></noscript></div>
+
+            <iframe
+              title="Flávio Bolsonaro Posted Over Twice as Often as Lula on Instagram in 2026"
+              aria-label="Line chart"
+              id="datawrapper-chart-XWOZb"
+              src="https://datawrapper.dwcdn.net/XWOZb/3/"
+              scrolling="no"
+              frameborder="0"
+              style="width: 0; min-width: 100% !important; border: none;"
+              height="490"
+              data-external="1"
+            ></iframe>
+          </div>
+
+          <!-- CHART 1: Flourish hierarchy -->
+          <div id="chart1" class="chartDiv">
+            <div class="flourish-embed flourish-hierarchy" data-src="visualisation/29655777">
+              <noscript><img src="https://public.flourish.studio/visualisation/29655777/thumbnail" width="100%" alt="hierarchy visualization" /></noscript>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrolly-overlay">
+
+        <!-- ===== CHART 0 — 3 steps ===== -->
+        <div class="step" id="step0-1">
+          <p> The Workers' Party (P.T), its supporters or its standard-bearer, Lula, came up <b>more often than any mention of the Bolsonaro family itself</b> — including his father.</p>
+        </div>
+        <div class="step" id="step0-2">
+          <p>Jair Bolsonaro is currently under <b>house arrest</b> after being sentenced in 2025 for attempting a coup following his 2022 election defeat to Lula. 
+</p>
+        </div>
+
+        <div class="step" id="step0-3">
+          <p> Now, Flávio seeks to assume the role of standard-bearer for the right wing and the Liberal Party (P.L.).
+
+</p>
+        </div>
+        <div class="step" id="step0-4">
+          <p>Flavio's references to Lula or the Workers' Party supporters were almost always <b>critical</b>. <i>"Telling the truth is a crime under the Lula government"</i>, read one caption from January 14. 
+</p>
+        </div>
+
+        <!-- ===== CHART 1 — 2 steps ===== -->
+        <div class="step" id="step1-1">
+          <p>Lula's account tells a <b>different story</b>. He rarely mentions his chief rival at all.</p>
+        </div>
+        <div class="step" id="step1-2">
+          <p> His captions dwell instead on <b>social policies</b> such as the public health system (SUS), the Prouni university scholarship program, and the Minha Casa Minha Vida housing initiative.</p>
+        </div>
+        <div class="step" id="step1-3">
+          <p><i>"A house is a nest. It's where people raise their children, where kids make friends for life. That's why I'm always so happy when we make deliveries like today's, through Minha Casa Minha Vida,</i>" Lula wrote in a caption on June 10. 
+</p>
+        </div>
+      </div>
+    </section>
+
+    <p>Lula and Flávio Bolsonaro also diverge in <b>volume and engagement of posts</b>. </p>
+
+    <div class="chart-embed">
+      <iframe title="Flávio Bolsonaro Posted Over Twice as Often as Lula on Instagram in 2026" aria-label="Line chart" id="datawrapper-chart-XWOZb" src="https://datawrapper.dwcdn.net/XWOZb/4/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="490" data-external="1"></iframe><script type="text/javascript">(function(){function e(){window.addEventListener(`message`,function(e){if(e.data[`datawrapper-height`]!==void 0){var t=document.querySelectorAll(`iframe`);for(var n in e.data[`datawrapper-height`])for(var r=0,i;i=t[r];r++)if(i.contentWindow===e.source){var a=e.data[`datawrapper-height`][n]+`px`;i.style.height=a}}})}e()})();</script>
+    </div>
+    <p>The starkest gap in volume came in March, when Flávio published posts at a rate of roughly <b> two and a half to one</b> compared with Lula.
+
+</p>
+    <p>That same month, Brazil’s Supreme Court granted Jair Bolsonaro humanitarian house arrest. The decision came only at the end of the month, on March 24, and in the days prior, Flávio Bolsonaro maid several posts to call for the measure.
+</p>
+<p> <i>“They are deliberately putting Bolsonaro’s life at risk. There is no longer any justification for failing to comply with the law and granting Bolsonaro humanitarian detention,” said one post.</i></p>
+
+<p>Flávio’s posts also received <b>higher engagement</b> on average.</p>
+    <div class="chart-embed">
+      <div class="flourish-embed flourish-pictogram" data-src="visualisation/29653856"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/29653856/thumbnail" width="100%" alt="pictogram visualization" /></noscript></div>
+    </div>
+    <div class="chart-embed">
+      <div class="flourish-embed flourish-pictogram" data-src="visualisation/29653734"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/29653734/thumbnail" width="100%" alt="pictogram visualization" /></noscript></div>
+    </div>
+    <p>The volume of posts from both camps, and the polarization driving the online debate, is likely to intensify as October’s election approaches — particularly if polling simulations that show a <b>second-round runoff </b>between Lula and Flávio prove accurate.</p>
+
+    <script type="text/javascript">
+      (function () {
+        function e() {
+          window.addEventListener("message", function (e) {
+            if (e.data["datawrapper-height"] !== void 0) {
+              var t = document.querySelectorAll("iframe");
+              for (var n in e.data["datawrapper-height"])
+                for (var r = 0, i; (i = t[r]); r++)
+                  if (i.contentWindow === e.source) {
+                    var a = e.data["datawrapper-height"][n] + "px";
+                    i.style.height = a;
+                  }
+            }
+          });
+        }
+        e();
+      })();
+    </script>
+
+    <footer class="methodology">
+      <h2>Methodology</h2>
+<p>This analysis is based on Instagram feed posts with captions published by Flávio Bolsonaro and Lula between January 1 and July 5, 2026.
+</p>
+<p>The data was collected using Apify and classified into topics — such as Lula & the Left, Bolsonaro Family and Campaign & Policy — using an AI-based classification model built in Python that was validated against a human-coded sample. The accuracy level for both candidates was higher than 70%.
+</p>
+      <p> Engagement figures reflect the average number of likes and comments per post over the same period. 
+        For a full breakdown of the classification criteria and data sources, see the complete methodology on <a href="https://github.com/LaraCastelo">GitHub</a>.</p>
+    </footer>
+
+    <!-- Mobile Warning Modal -->
+    <div id="deviceModal" class="modal">
+      <div class="modal-content">
+        <span>
+          Este site foi feito para ser visto em um computador. Se você estiver em um celular ou tablet, o layout pode ficar estranho.
+        </span>
+        <button id="continueBtn">Continuar mesmo assim</button>
+      </div>
+    </div>
+
+    <script>
+      /* ===== ADAPTADO: em vez de trocar "src" de uma imagem, troca a classe "active" entre os chartDivs ===== */
+
+      function showChart(id) {
+        document.querySelectorAll("#zoomBox .chartDiv").forEach(function (div) {
+          div.classList.remove("active");
+        });
+        document.getElementById(id).classList.add("active");
+      }
+
+      // Chart 0 — 3 steps
+      d3.select("#step0-1").on("stepin", function () { showChart("chart0"); });
+      d3.select("#step0-2").on("stepin", function () { showChart("chart0"); });
+      d3.select("#step0-3").on("stepin", function () { showChart("chart0"); });
+
+      // Chart 1 — 2 steps
+      d3.select("#step1-1").on("stepin", function () { showChart("chart1"); });
+      d3.select("#step1-2").on("stepin", function () { showChart("chart1"); });
+    </script>
+
+    <!-- LEAVE ALONE, scrolly code goes in the section below -->
+    <script>
+      const scroller = scrollama();
+
+      scroller
+        .setup({
+          step: "#scrolly .scrolly-overlay .step",
+          offset: 0.5,
+          debug: false
+        })
+        .onStepEnter(function ({ element, index, direction }) {
+          const event = new CustomEvent("stepin", { detail: { direction: direction } });
+          element.dispatchEvent(event);
+        })
+        .onStepExit(function ({ element, index, direction }) {
+          const event = new CustomEvent("stepout", { detail: { direction: direction } });
+          element.dispatchEvent(event);
+        });
+
+      window.addEventListener("resize", scroller.resize);
+    </script>
+
+    <!-- mobile phone warning modal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const isSmallScreen = window.innerWidth <= 900;
+
+        if (isSmallScreen) {
+          document.getElementById("deviceModal").style.display = "flex";
+        }
+
+        document
+          .getElementById("continueBtn")
+          .addEventListener("click", function () {
+            document.getElementById("deviceModal").style.display = "none";
+          });
+      });
+    </script>
+  </body>
+</html>
